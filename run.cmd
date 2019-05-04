@@ -1,0 +1,1 @@
+java -cp .;D:\ResilioSync\InfoWorkRelated\arrayInsert\out\production\arrayInsert;./lib/ojdbc7.jar nl.jacbeekers.InsertArrayCheck "jdbc:oracle:thin:@//linux75infa/ora12pdb.jacbeekers.nl" dqsignals dqsignals
