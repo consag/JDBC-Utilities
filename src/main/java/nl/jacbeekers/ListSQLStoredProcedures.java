@@ -12,8 +12,10 @@ import java.util.logging.Logger;
 public class ListSQLStoredProcedures {
 
     static Logger logger = Logger.getLogger(getClassname());
+    static String currentProcName ="";
 
     public static void main(String[] args) {
+        setProcName("main");
         initLogger();
 
         if(args.length < 2) {
@@ -36,9 +38,9 @@ public class ListSQLStoredProcedures {
     }
 
     private static void initLogger() {
-        String procName ="initLogger";
+        setProcName("initLogger");
         String logpropertiesFile = getClassname() + ".properties";
-        logger.setLevel(Level.ALL);
+        logger.setLevel(Level.FINEST);
         outConfig("Trying to load logger properties file >" + logpropertiesFile +"<...");
         try {
             InputStream inputStream = ListSQLStoredProcedures.class.getResourceAsStream(logpropertiesFile);
@@ -48,15 +50,15 @@ public class ListSQLStoredProcedures {
                 LogManager.getLogManager().readConfiguration(inputStream);
             }
         } catch(IOException e) {
-            outError(procName +": " + e.toString());
+            outError(e.toString());
         }
 
     }
     private static List<String> getStoredProcedures(Connection connection) {
-        String procName="getStoredProcedures";
+        setProcName("getStoredProcedures");
         List<String> storedProceduresList = new ArrayList<String>();
-        String catalog="";
-        String schemaPattern="%";
+        String catalog="testdb";
+        String schemaPattern="testschema";
         String procedureNamePattern="%";
 
         try {
@@ -64,26 +66,41 @@ public class ListSQLStoredProcedures {
             outConfig("Getting procedure metadata for catalog >" + catalog + "<.");
             outConfig("schemaPattern is >" + schemaPattern +"<.");
             outConfig("procedurePattern is >" + procedureNamePattern +"<.");
-            ResultSet resultSet = databaseMetaData.getProcedures(catalog, schemaPattern, procedureNamePattern);
-            ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-
-            outInfo("Catalog column 0: " + resultSetMetaData.getCatalogName(0));
-            outInfo("Schema column 0: " + resultSetMetaData.getSchemaName(0));
-            outInfo("Table name column 0: " + resultSetMetaData.getTableName(0));
-            while(resultSet.next()) {
-                if(resultSet.isFirst()) {
-                    for(int i=0; i < resultSetMetaData.getColumnCount(); i++) {
-                        outInfo(">" + i + "< Column name >" + resultSetMetaData.getColumnName(i)
-                            +"< is of type >" + resultSetMetaData.getColumnType(i) +"<, which is >"
-                            + JDBCType.valueOf(resultSetMetaData.getColumnType(i)).getName()+"<.");
-                    }
-                }
+            outDebug("Getting procedures...");
+            ResultSet resultSet = null;
+            resultSet = databaseMetaData.getProcedures(catalog, schemaPattern, procedureNamePattern);
+            outDebug("getting metadata...");
+            final ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            String columnNames = "";
+            for (int column = 0; column < columnCount; column++ ) {
+                columnNames += metaData.getColumnName(column +1).toUpperCase() + ";";
 
             }
+            outInfo(columnNames);
 
+            outDebug("Processing result set...");
+            int nrRecs =0;
+            while(resultSet.next()) {
+                nrRecs++;
+                outDebug("Record number is >" + nrRecs +"<.");
+//                final Object[] row = new Object[columnCount];
+                for(int column = 0; column < columnCount; column++) {
+                    int colType = resultSet.getType();
+                    //String colTypeName = JDBCType.valueOf(resultSet.getType()).getName();
+                    Object colValue = resultSet.getObject(column +1);
+                    if(colValue == null) {
+                        outInfo("Column data type is " + colType + "< and its value is >null<.");
+                    } else {
+                        outInfo("Column data type is >" + colType + "< and its value is >" + colValue.toString() +"<.");
+                    }
+                }
+                }
+            outDebug("Processing result set completed.");
+            resultSet.close();
 
         } catch (SQLException e) {
-            outError( procName +": " + e.toString());
+            outError(e.toString());
         }
 
 
@@ -91,27 +108,27 @@ public class ListSQLStoredProcedures {
     }
 
     public static void listProcedures(String databaseUrl, Properties databaseProperties) {
-        String procName = "listProcedures databaseUrl databaseProperties";
+        setProcName("listProcedures databaseUrl databaseProperties");
         Connection connection = null;
         try {
             connection = DriverManager.getConnection(databaseUrl, databaseProperties);
             List<String> storedProceduresList = getStoredProcedures(connection);
             connection.close();
         } catch (SQLException e) {
-            outError(procName +": " + e.toString());
+            outError(e.toString());
         }
 
     }
 
     public static void listProcedures(String databaseUrl) {
-        String procName = "listProcedures databaseUrl";
+        setProcName("listProcedures databaseUrl");
         Connection connection = null;
         try {
             connection = DriverManager.getConnection(databaseUrl);
             List<String> storedProceduresList = getStoredProcedures(connection);
             connection.close();
         } catch (SQLException e) {
-            outError(procName +": " + e.toString());
+            outError(e.toString());
         }
 
     }
@@ -120,10 +137,13 @@ public class ListSQLStoredProcedures {
     private static void outConfig(String config) { logger.info(getSetLogLine(config)); }
     private static void outInfo(String info) { logger.info(getSetLogLine(info)); }
     private static void outError(String error) { logger.severe(getSetLogLine(error)); }
+    private static void outDebug(String debuginfo) { logger.info(debuginfo); }
 
     private static String getClassname() { return "ListSQLStoredProcedures"; }
     private static String getSetLogLine(String message) {
-        return message;
+        return getProcName() + ": " + message;
     }
+    private static void setProcName(String procName) { currentProcName=procName; }
+    private static String getProcName() { return currentProcName; }
 
 }

@@ -1,4 +1,0 @@
-In D:\GitRepos\arrayinsertJava\target\classes>
-Copy sqljdbc42.jar to target\classes
-Then
-java -cp .;sqljdbc42.jar nl.jacbeekers.ListSQLStoredProcedures jdbc:sqlserver://localhost:1433 b
