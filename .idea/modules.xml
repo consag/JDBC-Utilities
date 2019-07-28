@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/arrayInsert.iml" filepath="$PROJECT_DIR$/arrayInsert.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jdbcutilities.iml" filepath="$PROJECT_DIR$/jdbcutilities.iml" />
     </modules>
   </component>
 </project>
