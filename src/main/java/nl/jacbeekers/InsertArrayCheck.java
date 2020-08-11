@@ -58,7 +58,7 @@ static void arrayInsert(String url, String username, String password) throws SQL
         if (recNr > batchSize) {
             recNr = 1;
             nrInserted=0;
-            int rc[] = preparedStatement.executeBatch();
+            int[] rc = preparedStatement.executeBatch();
             nrInserted = rc.length;
 //            for ( int r=0 ; r < rc.length ; r++) {
 //                nrInserted += r;
@@ -77,7 +77,7 @@ static void arrayInsert(String url, String username, String password) throws SQL
 
     }
 
-    int rc[] = preparedStatement.executeBatch();
+    int[] rc = preparedStatement.executeBatch();
     nrInserted = rc.length;
     System.out.println("Last array inserted >" + nrInserted + "< records.");
     preparedStatement.clearBatch();

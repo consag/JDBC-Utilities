@@ -72,12 +72,12 @@ public class ListSQLStoredProcedures {
             outDebug("getting metadata...");
             final ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
-            String columnNames = "";
+            StringBuilder columnNames = new StringBuilder();
             for (int column = 0; column < columnCount; column++ ) {
-                columnNames += metaData.getColumnName(column +1).toUpperCase() + ";";
+                columnNames.append(metaData.getColumnName(column + 1).toUpperCase()).append(";");
 
             }
-            outInfo(columnNames);
+            outInfo(columnNames.toString());
 
             outDebug("Processing result set...");
             int nrRecs =0;

@@ -7,7 +7,7 @@
 
     <groupId>nl.jacbeekers</groupId>
     <artifactId>jdbcutilities</artifactId>
-    <version>0.5-SNAPSHOT</version>
+    <version>0.6-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
             <jdk.version>1.8</jdk.version>
@@ -29,12 +29,5 @@
             </plugin>
         </plugins>
     </build>
-<dependencies>
-    <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>log4j</artifactId>
-        <version>1.2.12</version>
-    </dependency>
-</dependencies>
 
 </project>
